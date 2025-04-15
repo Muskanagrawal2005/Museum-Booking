@@ -122,3 +122,111 @@
 )
 
 [06-Apr-2025 15:27:27 Europe/Berlin] Signature verification successful
+
+[07-Apr-2025 11:51:31 Europe/Berlin] Raw input: {"razorpay_payment_id":"pay_QG7m9TuK9F4Zcf","razorpay_order_id":"order_QG7lmg40J9fyFK","razorpay_signature":"c7d1a868f07a3a9695f68c76c701b4df89a29a0fc31d342b70243e104df892de"}
+[07-Apr-2025 11:51:31 Europe/Berlin] Decoded data: Array
+(
+    [razorpay_payment_id] => pay_QG7m9TuK9F4Zcf
+    [razorpay_order_id] => order_QG7lmg40J9fyFK
+    [razorpay_signature] => c7d1a868f07a3a9695f68c76c701b4df89a29a0fc31d342b70243e104df892de
+)
+
+[07-Apr-2025 11:51:31 Europe/Berlin] Payment ID: pay_QG7m9TuK9F4Zcf
+[07-Apr-2025 11:51:31 Europe/Berlin] Order ID: order_QG7lmg40J9fyFK
+[07-Apr-2025 11:51:31 Europe/Berlin] Signature: c7d1a868f07a3a9695f68c76c701b4df89a29a0fc31d342b70243e104df892de
+[07-Apr-2025 11:51:31 Europe/Berlin] Attempting to verify signature with attributes: Array
+(
+    [razorpay_order_id] => order_QG7lmg40J9fyFK
+    [razorpay_payment_id] => pay_QG7m9TuK9F4Zcf
+    [razorpay_signature] => c7d1a868f07a3a9695f68c76c701b4df89a29a0fc31d342b70243e104df892de
+)
+
+[07-Apr-2025 11:51:31 Europe/Berlin] Signature verification successful
+[07-Apr-2025 12:00:54 Europe/Berlin] Raw input: {"razorpay_payment_id":"pay_QG7w3PALUUtNh7","razorpay_order_id":"order_QG7vwEMNggLN3H","razorpay_signature":"44ad93a41b2fe705f0406b12661f5b5ee9f71bb3f088d30045493b35d88481f3"}
+[07-Apr-2025 12:00:54 Europe/Berlin] Decoded data: Array
+(
+    [razorpay_payment_id] => pay_QG7w3PALUUtNh7
+    [razorpay_order_id] => order_QG7vwEMNggLN3H
+    [razorpay_signature] => 44ad93a41b2fe705f0406b12661f5b5ee9f71bb3f088d30045493b35d88481f3
+)
+
+[07-Apr-2025 12:00:54 Europe/Berlin] Payment ID: pay_QG7w3PALUUtNh7
+[07-Apr-2025 12:00:54 Europe/Berlin] Order ID: order_QG7vwEMNggLN3H
+[07-Apr-2025 12:00:54 Europe/Berlin] Signature: 44ad93a41b2fe705f0406b12661f5b5ee9f71bb3f088d30045493b35d88481f3
+[07-Apr-2025 12:00:54 Europe/Berlin] Attempting to verify signature with attributes: Array
+(
+    [razorpay_order_id] => order_QG7vwEMNggLN3H
+    [razorpay_payment_id] => pay_QG7w3PALUUtNh7
+    [razorpay_signature] => 44ad93a41b2fe705f0406b12661f5b5ee9f71bb3f088d30045493b35d88481f3
+)
+
+[07-Apr-2025 12:00:54 Europe/Berlin] Signature verification successful
+[07-Apr-2025 12:14:54 Europe/Berlin] Raw input: 
+[07-Apr-2025 12:14:54 Europe/Berlin] Decoded data: 
+[07-Apr-2025 12:14:54 Europe/Berlin] Error in verify-payment.php: Invalid JSON data received
+[07-Apr-2025 12:19:00 Europe/Berlin] Raw input: 
+[07-Apr-2025 12:19:00 Europe/Berlin] Decoded data: 
+[07-Apr-2025 12:19:00 Europe/Berlin] Error in verify-payment.php: Invalid JSON data received
+[07-Apr-2025 12:19:01 Europe/Berlin] Raw input: 
+[07-Apr-2025 12:19:01 Europe/Berlin] Decoded data: 
+[07-Apr-2025 12:19:01 Europe/Berlin] Error in verify-payment.php: Invalid JSON data received
+[07-Apr-2025 12:20:40 Europe/Berlin] Raw input: 
+[07-Apr-2025 12:20:40 Europe/Berlin] Decoded data: 
+[07-Apr-2025 12:20:40 Europe/Berlin] Error in verify-payment.php: Invalid JSON data received
+[07-Apr-2025 12:25:14 Europe/Berlin] Raw input: Array
+(
+    [payment_id] => pay_QG8LlgHSGYKDfQ
+    [order_id] => order_QG8LTJZm4OIpeW
+    [signature] => 7c919305b99db1d40856ffe35c1ba64dc1d7a173a12d9bb01c7259183ffe4367
+)
+
+[07-Apr-2025 12:25:14 Europe/Berlin] Payment ID: pay_QG8LlgHSGYKDfQ
+[07-Apr-2025 12:25:14 Europe/Berlin] Order ID: order_QG8LTJZm4OIpeW
+[07-Apr-2025 12:25:14 Europe/Berlin] Signature: 7c919305b99db1d40856ffe35c1ba64dc1d7a173a12d9bb01c7259183ffe4367
+[07-Apr-2025 12:25:14 Europe/Berlin] Attempting to verify signature with attributes: Array
+(
+    [razorpay_payment_id] => pay_QG8LlgHSGYKDfQ
+    [razorpay_order_id] => order_QG8LTJZm4OIpeW
+    [razorpay_signature] => 7c919305b99db1d40856ffe35c1ba64dc1d7a173a12d9bb01c7259183ffe4367
+)
+
+[07-Apr-2025 12:25:14 Europe/Berlin] Signature verification successful
+[07-Apr-2025 12:25:14 Europe/Berlin] Signature verification failed: Unknown column 'amount_paid' in 'field list'
+[07-Apr-2025 12:30:36 Europe/Berlin] Raw input: Array
+(
+    [payment_id] => pay_QG8RQAV8hLpYuV
+    [order_id] => order_QG8RHjiCWBSEV6
+    [signature] => 3678c1fda8d20b0198688d6818a44ba85c5ea96ae5f0bc59baf01a23150e3fb7
+)
+
+[07-Apr-2025 12:30:36 Europe/Berlin] Payment ID: pay_QG8RQAV8hLpYuV
+[07-Apr-2025 12:30:36 Europe/Berlin] Order ID: order_QG8RHjiCWBSEV6
+[07-Apr-2025 12:30:36 Europe/Berlin] Signature: 3678c1fda8d20b0198688d6818a44ba85c5ea96ae5f0bc59baf01a23150e3fb7
+[07-Apr-2025 12:30:36 Europe/Berlin] Attempting to verify signature with attributes: Array
+(
+    [razorpay_payment_id] => pay_QG8RQAV8hLpYuV
+    [razorpay_order_id] => order_QG8RHjiCWBSEV6
+    [razorpay_signature] => 3678c1fda8d20b0198688d6818a44ba85c5ea96ae5f0bc59baf01a23150e3fb7
+)
+
+[07-Apr-2025 12:30:36 Europe/Berlin] Signature verification successful
+[07-Apr-2025 12:30:36 Europe/Berlin] Signature verification failed: Unknown column 'amount_paid' in 'field list'
+[07-Apr-2025 13:22:43 Europe/Berlin] Raw input: Array
+(
+    [payment_id] => pay_QG9KTUgjgYTvry
+    [order_id] => order_QG9K9IE4TYKOKf
+    [signature] => 8cd6264b7d7b64fd89fd9b9bf57e32240ebffa0a4d08b54c9aafc2bf8b8e0ff0
+)
+
+[07-Apr-2025 13:22:43 Europe/Berlin] Payment ID: pay_QG9KTUgjgYTvry
+[07-Apr-2025 13:22:43 Europe/Berlin] Order ID: order_QG9K9IE4TYKOKf
+[07-Apr-2025 13:22:43 Europe/Berlin] Signature: 8cd6264b7d7b64fd89fd9b9bf57e32240ebffa0a4d08b54c9aafc2bf8b8e0ff0
+[07-Apr-2025 13:22:43 Europe/Berlin] Attempting to verify signature with attributes: Array
+(
+    [razorpay_signature] => 8cd6264b7d7b64fd89fd9b9bf57e32240ebffa0a4d08b54c9aafc2bf8b8e0ff0
+    [razorpay_payment_id] => pay_QG9KTUgjgYTvry
+    [razorpay_order_id] => order_QG9K9IE4TYKOKf
+)
+
+[07-Apr-2025 13:22:43 Europe/Berlin] Signature verification successful
+[07-Apr-2025 13:22:43 Europe/Berlin] Signature verification failed: Unknown column 'show_name' in 'field list'
