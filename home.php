@@ -3,30 +3,18 @@ session_start();
 require_once 'db.php';
 
 // Check if user is logged in
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-include 'templates/header.html'; 
+include 'includes/header.php'; 
 ?>
 
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <div class="nav-brand">Dashboard</div>
-    <ul class="nav-links">
-        <li><a href="home.php" class="active">Home</a></li>
-        <li><a href="about.php">About Us</a></li>
-        <li><a href="contact.php">Contact Us</a></li>
-        <li><a href="chat.php">Chat</a></li>
-        <li><a href="logout.php?logout=true" class="logout-link">Logout</a></li>
-    </ul>
-</nav>
-
-<div class="container">
-    <div class="welcome-section">
-        <h2>Hi, <?php echo htmlspecialchars($_SESSION['user']); ?>!</h2>
-        <p>Welcome to your dashboard</p>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-[#8B4513] mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['user']); ?>!</h2>
+        <p class="text-gray-700">Explore our amazing exhibitions and book your visit today</p>
     </div>
 </div>
 
@@ -38,7 +26,7 @@ include 'templates/header.html';
 <!-- Chatbot Container -->
 <div class="chatbot-container" id="chatbotContainer">
     <div class="chatbot-header">
-        <h3>Chat Assistant</h3>
+        <h3>Museum Assistant</h3>
         <button class="close-btn" id="closeChatbot">&times;</button>
     </div>
     <div class="chatbot-messages" id="chatbotMessages">
@@ -52,9 +40,39 @@ include 'templates/header.html';
 
 <!-- Add Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="styles/style.css">
 
 <!-- Add JavaScript for chatbot functionality -->
+
 <script>
+// Add this before your existing script
+document.addEventListener('DOMContentLoaded', function() {
+    // Intersection Observer for welcome section
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    // Observe welcome section
+    const welcomeSection = document.querySelector('.welcome-section');
+    observer.observe(welcomeSection);
+
+    // Add parallax effect to welcome decoration
+    document.addEventListener('mousemove', (e) => {
+        const decoration = document.querySelector('.welcome-decoration');
+        const x = (window.innerWidth - e.pageX) / 100;
+        const y = (window.innerHeight - e.pageY) / 100;
+        
+        decoration.style.transform = `translate(${x}px, ${y}px)`;
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const chatbotButton = document.getElementById('chatbotButton');
     const chatbotContainer = document.getElementById('chatbotContainer');
@@ -74,8 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Send message
-    function sendUserMessage() {
-        const message = userInput.value.trim();
+    function sendUserMessage(messageOverride = null) {
+        const message = messageOverride || userInput.value.trim();
         if (message) {
             // Add user message
             addMessage('user', message);
@@ -93,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.text())
             .then(response => {
                 if (response.trim()) {
+                    // Process the response
                     addMessage('bot', response);
                 } else {
                     addMessage('bot', 'Sorry, I could not process your request.');
@@ -110,13 +129,70 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
         
-        // Sanitize and format the message
-        const formattedMessage = message
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\n/g, '<br>');
+        if (sender === 'bot') {
+            // Check if the message contains the payment button marker
+            if (message.includes('[[PAYMENT_BUTTON')) {
+                // Split the message at the marker
+                const parts = message.split('[[PAYMENT_BUTTON');
+                
+                // Add the text part
+                const textPart = parts[0]
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = textPart;
+                
+                // Extract amount from the marker
+                const amountMatch = message.match(/\[\[PAYMENT_BUTTON:(\d+(\.\d+)?)\]\]/);
+                const amount = amountMatch ? amountMatch[1] : '0';
+                
+                // Create and add the payment button
+                const paymentButtonContainer = document.createElement('div');
+                paymentButtonContainer.className = 'payment-button-container';
+                paymentButtonContainer.style.textAlign = 'center';
+                paymentButtonContainer.style.marginTop = '20px';
+                
+                const paymentButton = document.createElement('a');
+                paymentButton.href = 'payment.php?amount=' + amount;
+                paymentButton.className = 'payment-button';
+                paymentButton.target = '_blank';
+                paymentButton.style.display = 'inline-block';
+                paymentButton.style.padding = '10px 20px';
+                paymentButton.style.backgroundColor = '#007bff';
+                paymentButton.style.color = 'white';
+                paymentButton.style.textDecoration = 'none';
+                paymentButton.style.borderRadius = '5px';
+                paymentButton.style.fontSize = '16px';
+                
+                // Add Font Awesome icon if available
+                if (typeof FontAwesome !== 'undefined') {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-credit-card';
+                    icon.style.marginRight = '5px';
+                    paymentButton.appendChild(icon);
+                }
+                
+                // Add text
+                const buttonText = document.createTextNode(' Pay ₹' + amount);
+                paymentButton.appendChild(buttonText);
+                
+                paymentButtonContainer.appendChild(paymentButton);
+                messageDiv.appendChild(paymentButtonContainer);
+            } else {
+                // Sanitize and format the message
+                const formattedMessage = message
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = formattedMessage;
+            }
+        } else {
+            // User message
+            messageDiv.textContent = message;
+        }
         
-        messageDiv.innerHTML = formattedMessage;
         chatbotMessages.appendChild(messageDiv);
         chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
     }
@@ -124,16 +200,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add initial welcome message
     addMessage('bot', 'Welcome to Museum Booking System!\nAvailable shows:\n\nAncient Egypt Exhibition - $25.00\nExplore the mysteries of ancient Egypt through artifacts and mummies\n\nModern Art Gallery - $20.00\nContemporary art from leading artists around the world\n\nDinosaur World - $30.00\nLife-size dinosaur models and fossil exhibitions\n\nType \'book\' to start booking tickets.');
 
-    sendMessage.addEventListener('click', sendUserMessage);
+    sendMessage.addEventListener('click', () => sendUserMessage());
     userInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendUserMessage();
         }
     });
+
+    function openBooking(exhibition) {
+        addMessage('user', 'book ' + exhibition);
+        sendUserMessage('book ' + exhibition);
+    }
 });
 </script>
 
 <?php 
-include 'templates/footer.html';
+include 'includes/footer.php';
 $conn->close();
 ?>

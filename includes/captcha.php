@@ -13,8 +13,8 @@ $image = imagecreatetruecolor($width, $height);
 
 // Colors
 $background = imagecolorallocate($image, 255, 255, 255);
-$text_color = imagecolorallocate($image, 20, 40, 100);
-$noise_color = imagecolorallocate($image, 100, 120, 180);
+$text_color = imagecolorallocate($image, 0, 0, 0);
+$noise_color = imagecolorallocate($image, 180, 200, 240);
 
 // Fill background
 imagefilledrectangle($image, 0, 0, $width, $height, $background);

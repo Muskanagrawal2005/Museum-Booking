@@ -1,108 +1,97 @@
 <?php
 session_start();
+require_once 'db.php';
 
-// Check if ticket number exists
-if (!isset($_SESSION['ticket_number'])) {
-    header('Location: index.php');
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
 
-$ticketNumber = $_SESSION['ticket_number'];
+// Get the latest booking for the user
+$stmt = $conn->prepare("SELECT * FROM bookings WHERE user_id = ? ORDER BY booking_date DESC LIMIT 1");
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$booking = $result->fetch_assoc();
+
+if (!$booking) {
+    header("Location: booking-error.php?message=No booking found");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Successful - Museum Booking</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f0f2f5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .success-icon {
-            font-size: 48px;
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        .ticket-number {
-            font-size: 24px;
-            color: #1a73e8;
-            padding: 15px;
-            background: #f8fafb;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-family: monospace;
-        }
-        .message {
-            color: #5f6368;
-            line-height: 1.6;
-            margin: 20px 0;
-        }
-        .home-button {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #1a73e8;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-        .home-button:hover {
-            background: #1557b0;
-        }
-        .print-button {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .print-button:hover {
-            background: #45a049;
-        }
-    </style>
+    <title>Booking Successful - Heritage Museum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="container">
-        <div class="success-icon">✓</div>
-        <h1>Booking Successful!</h1>
-        <p class="message">Your museum visit has been booked successfully.</p>
-        
-        <div class="ticket-number">
-            Ticket #: <?php echo htmlspecialchars($ticketNumber); ?>
+<body class="bg-[#F5F5DC] font-['Inter']">
+    <?php include 'includes/header.php'; ?>
+
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                <div class="text-center mb-8">
+                    <svg class="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <h2 class="text-3xl font-['SF_Pro_Display'] text-[#8B4513] mb-4">Booking Successful!</h2>
+                    <p class="text-gray-600">Your museum visit has been confirmed</p>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-8">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">Booking ID: <?php echo htmlspecialchars($booking['id']); ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between items-center border-b border-[#DEB887] pb-2">
+                        <span class="text-gray-600">Show</span>
+                        <span class="font-medium"><?php echo htmlspecialchars($booking['show_name']); ?></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-[#DEB887] pb-2">
+                        <span class="text-gray-600">Number of Tickets</span>
+                        <span class="font-medium"><?php echo $booking['num_tickets']; ?></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-[#DEB887] pb-2">
+                        <span class="text-gray-600">Show Time</span>
+                        <span class="font-medium"><?php echo htmlspecialchars($booking['show_time']); ?></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-[#DEB887] pb-2">
+                        <span class="text-gray-600">Booking Date</span>
+                        <span class="font-medium"><?php echo date('F j, Y', strtotime($booking['booking_date'])); ?></span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4">
+                        <span class="text-xl font-bold text-[#8B4513]">Total Amount</span>
+                        <span class="text-xl font-bold text-[#8B4513]">₹<?php echo number_format($booking['total_amount'], 2); ?></span>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-center space-x-4">
+                    <button onclick="window.print()" class="bg-[#8B4513] text-white py-2 px-6 rounded-full hover:bg-[#A0522D] transform hover:scale-105 transition-all duration-300 shadow-lg">
+                        Print Ticket
+                    </button>
+                    <a href="index.php" class="bg-gray-200 text-gray-700 py-2 px-6 rounded-full hover:bg-gray-300 transform hover:scale-105 transition-all duration-300">
+                        Return to Home
+                    </a>
+                </div>
+            </div>
         </div>
-        
-        <p class="message">
-            Please save this ticket number. You'll need to show it at the museum entrance.<br>
-            We've also sent a confirmation email with these details.
-        </p>
-        
-        <button onclick="window.print()" class="print-button">Print Ticket</button>
-        <a href="home.php" class="home-button">Back to Home</a>
     </div>
+
+    <?php include 'includes/footer.php'; ?>
 </body>
-</html><?php
-// Clear the ticket number from session after showing
-unset($_SESSION['ticket_number']);
-?>
+</html>
