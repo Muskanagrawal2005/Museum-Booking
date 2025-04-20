@@ -1,4 +1,5 @@
 <?php
+require_once 'includes/razorpay-config.php';
 session_start();
 require_once 'includes/razorpay-config.php';
 
@@ -14,13 +15,8 @@ if (!isset($_SESSION['total_amount']) || !isset($_GET['amount'])) {
     exit;
 }
 
-// Convert amounts to float for comparison
-$sessionAmount = (float)$_SESSION['total_amount'];
-$urlAmount = (float)$_GET['amount'];
-
-// Verify amount matches (with small tolerance for floating point comparison)
-if (abs($sessionAmount - $urlAmount) > 0.01) {
-    error_log("Amount mismatch - Session: $sessionAmount, URL: $urlAmount");
+// Verify amount matches
+if ($_SESSION['total_amount'] != $_GET['amount']) {
     header('Location: index.php');
     exit;
 }
@@ -29,7 +25,6 @@ if (abs($sessionAmount - $urlAmount) > 0.01) {
 $required_vars = ['total_amount', 'show_id', 'show_name', 'num_tickets', 'visitor_name', 'show_time', 'mobile_number'];
 foreach ($required_vars as $var) {
     if (!isset($_SESSION[$var])) {
-        error_log("Missing required session variable: $var");
         header('Location: index.php');
         exit;
     }
@@ -40,6 +35,13 @@ foreach ($required_vars as $var) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Booking Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <div style="text-align: center; padding: 20px;">
+        <h2>Museum Booking Payment</h2>
+        <button id="payButton">Pay Now</button>
     <title>Payment - Museum Booking</title>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
@@ -169,6 +171,26 @@ foreach ($required_vars as $var) {
     <script>
         document.getElementById('payButton').onclick = async function() {
             try {
+                // First create an order
+                const response = await fetch('process-payment.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: 1000, // Change this to your actual amount
+                        currency: 'INR',
+                        description: 'Museum Booking Payment'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.status !== 'success') throw new Error(data.message);
+
+                // Store order ID in a variable accessible to the handler
+                const razorpayOrderId = data.order.id;
+                console.log('Debug - Order created with ID:', razorpayOrderId);
+
                 // Create order
                 const response = await fetch('process-payment.php', {
                     method: 'POST'
@@ -185,6 +207,54 @@ foreach ($required_vars as $var) {
                     amount: data.order.amount,
                     currency: data.order.currency,
                     name: 'Museum Booking',
+                    description: 'Museum Entry Ticket',
+                    order_id: razorpayOrderId,
+                    handler: function (response) {
+                        console.log('Debug - Payment completed:', response);
+
+                        // Verify the payment
+                        fetch('verify-payment.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: razorpayOrderId,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Debug - Verification result:', data);
+                            if (data.status === 'success') {
+                                alert('Payment successful!');
+                                window.location.href = 'success.php';
+                            } else {
+                                alert('Payment verification failed: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Debug - Verification error:', error);
+                            alert('Payment verification failed: ' + error.message);
+                        });
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            console.log('Debug - Payment modal closed');
+                        }
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+
+                console.log('Debug - Opening payment with options:', {
+                    amount: options.amount,
+                    currency: options.currency,
+                    order_id: options.order_id
+                });
+
                     description: '<?php echo htmlspecialchars($_SESSION['show_name']); ?> - <?php echo $_SESSION['num_tickets']; ?> ticket(s)',
                     order_id: data.order.id,
                     handler: function (response) {
@@ -193,12 +263,6 @@ foreach ($required_vars as $var) {
                             'payment_id=' + response.razorpay_payment_id + 
                             '&order_id=' + response.razorpay_order_id + 
                             '&signature=' + response.razorpay_signature;
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            // Handle payment cancellation
-                            window.location.href = 'booking-failed.php?error=' + encodeURIComponent('Payment was cancelled');
-                        }
                     },
                     prefill: {
                         name: '<?php echo addslashes($_SESSION['visitor_name']); ?>',
@@ -213,6 +277,7 @@ foreach ($required_vars as $var) {
                 rzp.open();
                 
             } catch (error) {
+                alert('Error: ' + error.message);
                 alert('Payment initialization failed: ' + error.message);
                 console.error('Error:', error);
             }
